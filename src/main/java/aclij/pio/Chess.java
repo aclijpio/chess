@@ -14,14 +14,18 @@ class Chess {
         this.render = render;
     }
 
-    public void StartLocalConsole(){
-        WaitForResponse waitForResponse = new ConsoleResponse();
-        boolean isWhiteToMove;
+    public void StartLocalConsole(WaitForResponse response){
+        boolean isWhiteToMove = false;
         while (true) {
             render.render(board);
 
-            board.pieceMoveTo(waitForResponse.getNextStep(), waitForResponse.getNextStep());
-            isWhiteToMove=!;
+            board.pieceMoveTo(
+                    response.getNextStep(),
+                    response.getNextStep(),
+                    isWhiteToMove
+            );
+            isWhiteToMove = !isWhiteToMove;
+
         }
     }
 

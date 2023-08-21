@@ -24,7 +24,6 @@ public class Board {
     }
     private boolean isPieceJump(Piece piece, Coordinates coordinates){
         if (piece instanceof Knight) return true;
-        System.out.println(1);
         int file = piece.coordinates.file.ordinal();
         int rank = piece.coordinates.rank;
         int dFile = piece.coordinates.file == coordinates.file ? 0 :
@@ -42,20 +41,17 @@ public class Board {
 
         return true;
     }
-    public void pieceMoveTo(Coordinates selectedCoordinates, Coordinates coordinates){
-        System.out.println(1);
+    public void pieceMoveTo(Coordinates selectedCoordinates, Coordinates coordinates, boolean isWhiteMove){
         Piece piece = this.getPiece(selectedCoordinates);
-        System.out.println(selectedCoordinates.toString());
-        System.out.println(selectedCoordinates.file + String.valueOf(selectedCoordinates.rank));
-        if (piece != null && conditionForMove(piece, coordinates)) {
-            System.out.println(2);
+        if (piece != null
+                && conditionForMove(piece, coordinates)
+                && isWhiteMove == (piece.color == Color.WHITE)) {
             pieces.remove(piece.coordinates);
             this.setPiece(coordinates, piece.moveTo(coordinates));
         }
     }
     private boolean conditionForMove(Piece piece, Coordinates coordinates){
         boolean isEnemy = isEnemy(piece, coordinates);
-        System.out.println(isPieceJump(piece, coordinates));
         return piece.checkAvailableMove(coordinates, isEnemy) &&
                 (isEnemy || isSquareEmpty(coordinates)) &&
                 isPieceJump(piece, coordinates);
