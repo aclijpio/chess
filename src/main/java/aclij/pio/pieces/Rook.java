@@ -20,5 +20,8 @@ public class Rook extends Piece{
         return  this.coordinates.file == coordinates.file ||
                 this.coordinates.rank.equals(coordinates.rank);
     }
-
+    @Override
+    public boolean isRook() {
+        return true;
+    }
 }

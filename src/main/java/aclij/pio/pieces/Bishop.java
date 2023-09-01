@@ -21,5 +21,8 @@ public class Bishop extends Piece {
         int dRank = Math.abs(this.coordinates.rank - coordinates.rank);
         return dFile == dRank;
     }
-
+    @Override
+    public boolean isBishop() {
+        return true;
+    }
 }

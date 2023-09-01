@@ -24,5 +24,8 @@ public class Queen extends Piece{
                 (dFile == 0 && dRank == 1);
     }
 
-
+    @Override
+    public boolean isQueen() {
+        return true;
+    }
 }

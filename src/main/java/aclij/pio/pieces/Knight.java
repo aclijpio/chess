@@ -23,6 +23,8 @@ public class Knight extends Piece {
         return  (dFile == 2 && dRank == 1) ||
                 (dFile == 1 && dRank == 2);
     }
-
-
+    @Override
+    public boolean isKnight() {
+        return true;
+    }
 }

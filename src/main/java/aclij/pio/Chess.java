@@ -8,24 +8,21 @@ import aclij.pio.waitForAnswer.WaitForResponse;
 class Chess {
         Board board;
         Render render;
-
     public Chess(Board board, Render render) {
         this.board = board;
         this.render = render;
     }
 
     public void StartLocalConsole(WaitForResponse response){
-        boolean isWhiteToMove = false;
+        boolean isWhiteToMove = true;
         while (true) {
             render.render(board);
-
-            board.pieceMoveTo(
+            if (board.pieceMoveTo(
                     response.getNextStep(),
                     response.getNextStep(),
                     isWhiteToMove
-            );
-            isWhiteToMove = !isWhiteToMove;
-
+            ))
+                isWhiteToMove = !isWhiteToMove;
         }
     }
 
