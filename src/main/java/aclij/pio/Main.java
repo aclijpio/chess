@@ -12,6 +12,6 @@ public class Main {
 
         Chess chess = new Chess(board, new BoardConsoleRenderer());
 
-        chess.StartLocalConsole(new ConsoleResponse());
+        chess.start(new ConsoleResponse());
     }
 }

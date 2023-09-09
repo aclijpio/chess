@@ -2,7 +2,6 @@ package aclij.pio;
 
 import aclij.pio.board.Board;
 import aclij.pio.renderer.Render;
-import aclij.pio.waitForAnswer.ConsoleResponse;
 import aclij.pio.waitForAnswer.WaitForResponse;
 
 class Chess {
@@ -13,7 +12,7 @@ class Chess {
         this.render = render;
     }
 
-    public void StartLocalConsole(WaitForResponse response){
+    public void start(WaitForResponse response){
         boolean isWhiteToMove = true;
         while (true) {
             render.render(board);

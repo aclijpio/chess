@@ -3,32 +3,24 @@ package aclij.pio.board;
 import aclij.pio.Color;
 import aclij.pio.Coordinates;
 import aclij.pio.File;
-import aclij.pio.board.exceptions.QueenPieceNotFound;
+import aclij.pio.exceptions.PieceNotFoundException;
 import aclij.pio.pieces.*;
-import aclij.pio.waitForAnswer.ConsoleResponse;
 
 import java.util.HashMap;
-import java.util.Set;
 
 public class Board {
     HashMap<Coordinates, Piece> pieces = new HashMap<Coordinates, Piece>();
-    public void setPiece (Coordinates coordinates, Piece piece){
-        piece.coordinates = coordinates;
-        pieces.put(coordinates, piece);
-    }
+    private Piece whiteQueen;
+    private Piece blackQueen;
 
     public boolean isSquareEmpty(Coordinates coordinates){
-        return !isSquareBusy(coordinates);
+        return !isSquareOccupied(coordinates);
     }
-    public boolean isSquareBusy(Coordinates coordinates){
+    public boolean isSquareOccupied(Coordinates coordinates){
         return this.pieces.containsKey(coordinates);
     }
-    private boolean isEnemy(Piece piece, Coordinates coordinates){
-        return !isSquareEmpty(coordinates) &&
-                this.getPiece(coordinates).color != piece.color;
-    }
     private boolean isPieceJump(Piece piece, Coordinates coordinates){
-        if (piece.isKnight()) return true;
+        if (piece instanceof Knight) return true;
         int file = piece.coordinates.file.ordinal();
         int rank = piece.coordinates.rank;
         int dFile = piece.coordinates.file == coordinates.file ? 0 :
@@ -42,72 +34,59 @@ public class Board {
         }
         return true;
     }
+    public boolean isCheckmate(Piece piece){
+        System.out.println(piece.isQueen());
+        System.out.println(piece.isUnderAttack(this));
+        if(piece.isQueen() && !(piece.isUnderAttack(this)))
+            return false;
+        return ( whiteQueen.isUnderAttack(this) ||
+                 blackQueen.isUnderAttack(this) );
+    }
     public boolean pieceMoveTo(Coordinates selectedCoordinates, Coordinates coordinates, boolean isWhiteMove){
         Piece piece = this.getPiece(selectedCoordinates);
-        if (piece != null
-                && conditionForMove(piece, coordinates)
-                && isWhiteMove == (piece.color == Color.WHITE)) {
+        if (conditionForMove(
+                piece,
+                this.tryGetPiece(coordinates)
+                )) {
             pieces.remove(piece.coordinates);
             this.setPiece(coordinates, piece.moveTo(coordinates));
+            if (piece.isQueen()){
+                if (piece.color.equals(Color.WHITE))
+                    whiteQueen = piece;
+                else
+                    blackQueen = piece;
+            }
             return true;
         }
         return false;
     }
-    private boolean isShah(Piece piece){
-        int[][] dSteps = {
-                {1, 1},
-                {1, -1},
-                {-1, -1},
-                {-1, 1},
-                {0, 1},
-                {0, -1},
-                {1, 0},
-                {-1, 0},
-                {1, 2},
-                {2, 1},
-                {-1, -2},
-                {-2, -1}
-        };
-        return checkRows(piece, dSteps);
-    }
-    private boolean checkRows(Piece piece, int [][] dSteps){
-        for (int [] dStep:
-                dSteps) {
-            int dFile = piece.coordinates.file.ordinal() + dStep[0];
-            int dRank = piece.coordinates.rank + dStep[1];
-            Coordinates start = new Coordinates(
-                    File.values()[dFile],
-                    dRank
-            );
-            while(start.file.equals(File.A) || (start.file.equals(File.H))
-                    || (start.rank == 1 || start.rank == 8)) {
-                start = new Coordinates(
-                        File.values()[dFile += dStep[0]],
-                        dRank += dStep[1]
-                );
-                if (isSquareBusy(start)) {
-                    Piece selectedPiece = getPiece(start);
-                    if (selectedPiece.color == piece.color)
-                        break;
-                    else if (selectedPiece.isBishop())
-                        return true;
-                }
-            }
-        }
-        return false;
-    }
 
-    private boolean conditionForMove(Piece piece, Coordinates coordinates){
-        boolean isEnemy = isEnemy(piece, coordinates);
-        return piece.checkAvailableMove(coordinates, isEnemy) &&
-                (isEnemy || isSquareEmpty(coordinates)) &&
-                isPieceJump(piece, coordinates);
+    private boolean conditionForMove(Piece piece, Piece targetSquare){
+        return !isCheckmate(piece) &&
+                piece.checkAvailableMove(targetSquare) &&
+                (piece.isEnemy(targetSquare) || isSquareEmpty(targetSquare.coordinates)) &&
+                isPieceJump(piece, targetSquare.coordinates);
     }
-    public Set<Coordinates> getAllPossibleMoveCoordinates(Coordinates coordinates){
-        return getPiece(coordinates).getPossibleMoveCoordinates();
-    }
-    public Piece getPiece(Coordinates coordinates){
+    public Piece getPiece(Coordinates coordinates) throws PieceNotFoundException {
+        if (isSquareEmpty(coordinates))
+            throw new PieceNotFoundException(
+                    String.format("Piece with coordinates: ( file - %s, rank - %d ) not found.",
+                            coordinates.file,
+                            coordinates.rank
+                    )
+            );
         return pieces.get(coordinates);
+    }
+    public Piece tryGetPiece(Coordinates coordinates){
+        try {
+            return getPiece(coordinates);
+        } catch (PieceNotFoundException e){
+            return new King(null, coordinates);
+        }
+    }
+    private void setPiece (Coordinates coordinates, Piece piece){
+        piece.coordinates = coordinates;
+        pieces.put(coordinates, piece);
     }
     public void setupDefaultPiecesPositions(){
         // set pawns
@@ -139,8 +118,12 @@ public class Board {
         {
             Coordinates coordinatesWhite = new Coordinates(File.E, 1);
             Coordinates coordinatesBlack = new Coordinates(File.D, 8);
-            this.setPiece(coordinatesWhite, new Queen(Color.WHITE, coordinatesWhite));
-            this.setPiece(coordinatesBlack, new Queen(Color.BLACK, coordinatesBlack));
+            Piece whiteQueen = new Queen(Color.WHITE, coordinatesWhite);
+            Piece blackQueen = new Queen(Color.BLACK, coordinatesWhite);
+            this.setPiece(coordinatesWhite, whiteQueen);
+            this.setPiece(coordinatesBlack, blackQueen);
+            this.whiteQueen = whiteQueen;
+            this.blackQueen = blackQueen;
         }
         //set bishop
         {
@@ -164,6 +147,5 @@ public class Board {
             this.setPiece(coordinatesBlackFirst, new Knight(Color.BLACK, coordinatesBlackFirst));
             this.setPiece(coordinatesBlackSecond, new Knight(Color.BLACK, coordinatesBlackSecond));
         }
-
     }
 }

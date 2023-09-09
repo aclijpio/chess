@@ -45,4 +45,6 @@ public class Coordinates {
     public int hashCode() {
         return Objects.hash(file, rank);
     }
+
+
 }
