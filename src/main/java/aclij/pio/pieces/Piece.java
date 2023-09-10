@@ -19,7 +19,8 @@ public abstract class Piece {
         this.coordinates = coordinates;
         return this;
     }
-    public abstract Set<List<Coordinates>> getPossibleMoveCoordinates();
+    public abstract Set<List<Coordinates>> getAllPossibleMoveCoordinates();
+    public abstract Set<List<Coordinates>> getAllPossibleMoveCoordinatesUntilColor(Board board);
 
     public abstract boolean checkAvailableMove(Piece targetSquare);
     public boolean isQueen(){
@@ -32,26 +33,42 @@ public abstract class Piece {
         if (color == null) return false;
         return !(this.color == color);
     }
+    public boolean isEnemy(Board board, Coordinates coordinates){
+        return board.isSquareOccupied(coordinates)
+                || isEnemy(board.getPiece(coordinates).color);
+    }
     public boolean isNotAboard(int file, int rank){
         return  (file >= 0 && file < 8) &&
                 (rank > 0 && rank < 9);
     }
     public Set<Coordinates> getPossibleAttackCoordinates(Board board){
-        return getPossibleMoveCoordinates()
+        return getAllPossibleMoveCoordinatesUntilColor(board)
                 .stream()
                 .flatMap(List::stream)
                 .filter(coordinates -> board.isSquareOccupied(coordinates) && board.getPiece(coordinates).isEnemy(this.color))
                 .collect(Collectors.toSet());
     }
-    public boolean isUnderAttack(Board board){
-        return getPossibleMoveCoordinates()
+    public boolean isAttacks(Board board){
+        return getPossibleAttackCoordinates(board)
                 .stream()
-                .flatMap(List::stream)
-                .filter(board::isSquareOccupied)
-                .map(board::getPiece)
-                .anyMatch(piece -> piece.isEnemy(this.color));
+                .anyMatch(Objects::nonNull);
     }
-    int count = 0;
+    public boolean isAttacksPiece(Board board, Class<? extends Piece> pieceClass){
+        for (Coordinates attackedCoordinates:
+                getPossibleAttackCoordinates(board)) {
+            Piece piece = board.getPiece(attackedCoordinates);
+            if (piece.getClass().equals(pieceClass)){
+                System.out.print(piece.color);
+                System.out.println(piece.coordinates);
+                System.out.println(piece.getPossibleAttackCoordinates(board));
+            }
+        }
+        return getPossibleAttackCoordinates(board)
+                .stream()
+                .map(board::getPiece)
+                .anyMatch(x -> x.getClass().equals(pieceClass));
+    }
+
     protected final Set<List<Coordinates>> getAbstractSinglePossibleMoveCoordinates(int [][] MOVEMENT_RULES){
         Set<List<Coordinates>> moveCoordinatesLines = new HashSet<>();
         int file = this.coordinates.file.ordinal();
@@ -65,7 +82,6 @@ public abstract class Piece {
                         new Coordinates(File.values()[dFile], dRank)
                     )
                 );
-                count++;
             }
         }
         return moveCoordinatesLines;
@@ -78,8 +94,46 @@ public abstract class Piece {
             int dFile = file;
             int dRank = this.coordinates.rank;
             List<Coordinates> moveCoordinates = new ArrayList<>();
-            while(isNotAboard(dFile, dRank)){
-                moveCoordinates.add(new Coordinates(File.values()[dFile += movementRule[0]], dRank += movementRule[1]));
+            while(isNotAboard(dFile += movementRule[0], dRank += movementRule[1])) {
+                Coordinates selectedCoordinates = new Coordinates(File.values()[dFile], dRank);
+                moveCoordinates.add(selectedCoordinates);
+            }
+            moveCoordinatesLines.add(moveCoordinates);
+        }
+        return moveCoordinatesLines;
+    }
+    protected final Set<List<Coordinates>> getAbstractSinglePossibleMoveCoordinates(Board board, int [][] MOVEMENT_RULES){
+        Set<List<Coordinates>> moveCoordinatesLines = new HashSet<>();
+        int file = this.coordinates.file.ordinal();
+        int rank = this.coordinates.rank;
+        for (int [] movementRule :
+                MOVEMENT_RULES) {
+            int dFile = file + movementRule[0];
+            int dRank = rank + movementRule[1];
+            if (isNotAboard(dFile, dRank)) {
+                Coordinates selectedCoordinates = new Coordinates(File.values()[dFile], dRank);
+                if (isEnemy(board, coordinates) || board.isSquareEmpty(coordinates))
+                    moveCoordinatesLines.add(List.of(
+                                selectedCoordinates
+                            )
+                    );
+            }
+        }
+        return moveCoordinatesLines;
+    }
+    protected final Set<List<Coordinates>> getAbstractMultiplyPossibleMoveCoordinates(Board board, int [][] MOVEMENT_RULES){
+        Set<List<Coordinates>> moveCoordinatesLines = new HashSet<>();
+        int file = this.coordinates.file.ordinal();
+        for (int [] movementRule :
+                MOVEMENT_RULES) {
+            int dFile = file;
+            int dRank = this.coordinates.rank;
+            List<Coordinates> moveCoordinates = new ArrayList<>();
+            while(isNotAboard(dFile += movementRule[0], dRank += movementRule[1])) {
+                Coordinates selectedCoordinates = new Coordinates(File.values()[dFile], dRank);
+                if (isEnemy(board, selectedCoordinates) || board.isSquareEmpty(coordinates))
+                    break;
+                moveCoordinates.add(selectedCoordinates);
             }
             moveCoordinatesLines.add(moveCoordinates);
         }

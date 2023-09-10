@@ -8,10 +8,8 @@ import aclij.pio.pieces.*;
 
 import java.util.HashMap;
 
-public class Board {
+public class Board{
     HashMap<Coordinates, Piece> pieces = new HashMap<Coordinates, Piece>();
-    private Piece whiteQueen;
-    private Piece blackQueen;
 
     public boolean isSquareEmpty(Coordinates coordinates){
         return !isSquareOccupied(coordinates);
@@ -34,14 +32,22 @@ public class Board {
         }
         return true;
     }
-    public boolean isCheckmate(Piece piece){
-        System.out.println(piece.isQueen());
-        System.out.println(piece.isUnderAttack(this));
-        if(piece.isQueen() && !(piece.isUnderAttack(this)))
-            return false;
-        return ( whiteQueen.isUnderAttack(this) ||
-                 blackQueen.isUnderAttack(this) );
+    private boolean pieceIsUnderAttack(Class<? extends Piece> pieceClass){
+        for (Piece piece:
+             pieces.values()) {
+            if(!piece.getClass().equals(pieceClass) && piece.isAttacksPiece(this, pieceClass))
+                return true;
+        }
+        return false;
     }
+    public boolean isCheckmate(Piece piece){
+        boolean pieceIsUnderAttack = (pieceIsUnderAttack(Queen.class));
+        System.out.println(pieceIsUnderAttack);
+        if(piece.isQueen() && !pieceIsUnderAttack)
+            return false;
+        return pieceIsUnderAttack;
+    }
+
     public boolean pieceMoveTo(Coordinates selectedCoordinates, Coordinates coordinates, boolean isWhiteMove){
         Piece piece = this.getPiece(selectedCoordinates);
         if (conditionForMove(
@@ -50,12 +56,6 @@ public class Board {
                 )) {
             pieces.remove(piece.coordinates);
             this.setPiece(coordinates, piece.moveTo(coordinates));
-            if (piece.isQueen()){
-                if (piece.color.equals(Color.WHITE))
-                    whiteQueen = piece;
-                else
-                    blackQueen = piece;
-            }
             return true;
         }
         return false;
@@ -71,10 +71,10 @@ public class Board {
         if (isSquareEmpty(coordinates))
             throw new PieceNotFoundException(
                     String.format("Piece with coordinates: ( file - %s, rank - %d ) not found.",
-                            coordinates.file,
+                            coordinates.file.toString(),
                             coordinates.rank
                     )
-            );
+             );
         return pieces.get(coordinates);
     }
     public Piece tryGetPiece(Coordinates coordinates){
@@ -122,8 +122,6 @@ public class Board {
             Piece blackQueen = new Queen(Color.BLACK, coordinatesWhite);
             this.setPiece(coordinatesWhite, whiteQueen);
             this.setPiece(coordinatesBlack, blackQueen);
-            this.whiteQueen = whiteQueen;
-            this.blackQueen = blackQueen;
         }
         //set bishop
         {

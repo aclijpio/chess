@@ -9,11 +9,15 @@ public class PawnStep implements PieceStep {
 
     public static final int [][] MOVEMENT_RULES_WHITE = {
             {0, 1},
-            {0, 2}
+            {0, 2},
+            {1, 1},
+            {-1, 1}
     };
     public static final int [][] MOVEMENT_RULES_BLACK= {
             {0, -1},
-            {0, -2}
+            {0, -2},
+            {1, -1},
+            {-1, -1}
     };
     private final Pawn pawn;
     public PawnStep(Pawn pawn) {
