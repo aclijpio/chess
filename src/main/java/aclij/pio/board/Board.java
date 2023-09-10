@@ -35,17 +35,24 @@ public class Board{
     private boolean pieceIsUnderAttack(Class<? extends Piece> pieceClass){
         for (Piece piece:
              pieces.values()) {
-            if(!piece.getClass().equals(pieceClass) && piece.isAttacksPiece(this, pieceClass))
+            if(piece.isAttacksPiece(this, pieceClass))
                 return true;
         }
         return false;
     }
-    public boolean isCheckmate(Piece piece){
-        boolean pieceIsUnderAttack = (pieceIsUnderAttack(Queen.class));
-        System.out.println(pieceIsUnderAttack);
-        if(piece.isQueen() && !pieceIsUnderAttack)
-            return false;
-        return pieceIsUnderAttack;
+    public boolean isCheckmate(Piece piece, Coordinates coordinates){
+        return pieceIsUnderAttack(Queen.class);
+
+    }
+    public boolean queenLeaveTheShah(Piece piece, Coordinates coordinates){
+        Piece temp;
+        if (piece.isQueen()){
+            temp = piece;
+            piece.coordinates = coordinates;
+            return pieceIsUnderAttack(Queen.class);
+        } else
+            piece.coordinates = temp;
+        return false;
     }
 
     public boolean pieceMoveTo(Coordinates selectedCoordinates, Coordinates coordinates, boolean isWhiteMove){

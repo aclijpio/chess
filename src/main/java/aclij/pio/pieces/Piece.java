@@ -35,7 +35,7 @@ public abstract class Piece {
     }
     public boolean isEnemy(Board board, Coordinates coordinates){
         return board.isSquareOccupied(coordinates)
-                || isEnemy(board.getPiece(coordinates).color);
+                && isEnemy(board.getPiece(coordinates).color);
     }
     public boolean isNotAboard(int file, int rank){
         return  (file >= 0 && file < 8) &&
@@ -58,9 +58,6 @@ public abstract class Piece {
                 getPossibleAttackCoordinates(board)) {
             Piece piece = board.getPiece(attackedCoordinates);
             if (piece.getClass().equals(pieceClass)){
-                System.out.print(piece.color);
-                System.out.println(piece.coordinates);
-                System.out.println(piece.getPossibleAttackCoordinates(board));
             }
         }
         return getPossibleAttackCoordinates(board)
@@ -112,7 +109,7 @@ public abstract class Piece {
             int dRank = rank + movementRule[1];
             if (isNotAboard(dFile, dRank)) {
                 Coordinates selectedCoordinates = new Coordinates(File.values()[dFile], dRank);
-                if (isEnemy(board, coordinates) || board.isSquareEmpty(coordinates))
+                if (board.isSquareEmpty(selectedCoordinates) || isEnemy(board, selectedCoordinates))
                     moveCoordinatesLines.add(List.of(
                                 selectedCoordinates
                             )
@@ -131,7 +128,7 @@ public abstract class Piece {
             List<Coordinates> moveCoordinates = new ArrayList<>();
             while(isNotAboard(dFile += movementRule[0], dRank += movementRule[1])) {
                 Coordinates selectedCoordinates = new Coordinates(File.values()[dFile], dRank);
-                if (isEnemy(board, selectedCoordinates) || board.isSquareEmpty(coordinates))
+                if (isEnemy(board, selectedCoordinates) || board.isSquareEmpty(selectedCoordinates))
                     break;
                 moveCoordinates.add(selectedCoordinates);
             }

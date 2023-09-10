@@ -24,7 +24,7 @@ public class Pawn extends Piece{
     }
     @Override
     public Set<List<Coordinates>> getAllPossibleMoveCoordinatesUntilColor(Board board){
-        return super.getAbstractSinglePossibleMoveCoordinates(board, pawnStep.getMovementRules());
+        return super.getAbstractSinglePossibleMoveCoordinates(pawnStep.getMovementRules());
     }
     @Override
     public boolean checkAvailableMove(Piece targetSquare) {
