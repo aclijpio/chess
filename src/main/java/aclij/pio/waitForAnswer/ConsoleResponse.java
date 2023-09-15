@@ -1,9 +1,7 @@
 package aclij.pio.waitForAnswer;
 
-import aclij.pio.Coordinates;
-import aclij.pio.exceptions.CoordinatesFormatException;
+import aclij.pio.coordinates.Coordinates;
 
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

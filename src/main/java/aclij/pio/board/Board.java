@@ -1,8 +1,8 @@
 package aclij.pio.board;
 
-import aclij.pio.Color;
-import aclij.pio.Coordinates;
-import aclij.pio.File;
+import aclij.pio.coordinates.Color;
+import aclij.pio.coordinates.Coordinates;
+import aclij.pio.coordinates.File;
 import aclij.pio.exceptions.PieceNotFoundException;
 import aclij.pio.pieces.*;
 
@@ -17,62 +17,11 @@ public class Board{
     public boolean isSquareOccupied(Coordinates coordinates){
         return this.pieces.containsKey(coordinates);
     }
-    private boolean isPieceJump(Piece piece, Coordinates coordinates){
-        if (piece instanceof Knight) return true;
-        int file = piece.coordinates.file.ordinal();
-        int rank = piece.coordinates.rank;
-        int dFile = piece.coordinates.file == coordinates.file ? 0 :
-                (coordinates.file.ordinal() - file > 0 ? 1 : -1);
-        int dRank = piece.coordinates.rank.equals(coordinates.rank) ? 0 :
-                (coordinates.rank - rank > 0 ? 1 : -1);
-        Coordinates start = new Coordinates(File.values()[file+=dFile], rank+=dRank);
-        while (!start.equals(coordinates)){
-            if (!isSquareEmpty(start)) return false;
-            start = new Coordinates(File.values()[file+=dFile], rank+=dRank);
-        }
-        return true;
-    }
-    private boolean pieceIsUnderAttack(Class<? extends Piece> pieceClass){
-        for (Piece piece:
-             pieces.values()) {
-            if(piece.isAttacksPiece(this, pieceClass))
-                return true;
-        }
-        return false;
-    }
-    public boolean isCheckmate(Piece piece, Coordinates coordinates){
-        return pieceIsUnderAttack(Queen.class);
 
-    }
-    public boolean queenLeaveTheShah(Piece piece, Coordinates coordinates){
-        Piece temp;
-        if (piece.isQueen()){
-            temp = piece;
-            piece.coordinates = coordinates;
-            return pieceIsUnderAttack(Queen.class);
-        } else
-            piece.coordinates = temp;
-        return false;
-    }
-
-    public boolean pieceMoveTo(Coordinates selectedCoordinates, Coordinates coordinates, boolean isWhiteMove){
-        Piece piece = this.getPiece(selectedCoordinates);
-        if (conditionForMove(
-                piece,
-                this.tryGetPiece(coordinates)
-                )) {
-            pieces.remove(piece.coordinates);
-            this.setPiece(coordinates, piece.moveTo(coordinates));
-            return true;
-        }
-        return false;
-    }
-
-    private boolean conditionForMove(Piece piece, Piece targetSquare){
-        return !isCheckmate(piece) &&
-                piece.checkAvailableMove(targetSquare) &&
-                (piece.isEnemy(targetSquare) || isSquareEmpty(targetSquare.coordinates)) &&
-                isPieceJump(piece, targetSquare.coordinates);
+    public void pieceMoveTo(Piece selectedPiece, Coordinates coordinates){
+        Piece piece = this.getPiece(selectedPiece.coordinates);
+        pieces.remove(piece.coordinates);
+        this.setPiece(coordinates, piece.moveTo(coordinates));
     }
     public Piece getPiece(Coordinates coordinates) throws PieceNotFoundException {
         if (isSquareEmpty(coordinates))
@@ -88,12 +37,15 @@ public class Board{
         try {
             return getPiece(coordinates);
         } catch (PieceNotFoundException e){
-            return new King(null, coordinates);
+            return new Pawn(null, coordinates);
         }
     }
     private void setPiece (Coordinates coordinates, Piece piece){
         piece.coordinates = coordinates;
         pieces.put(coordinates, piece);
+    }
+    public HashMap<Coordinates, Piece> getPieces(){
+        return pieces;
     }
     public void setupDefaultPiecesPositions(){
         // set pawns

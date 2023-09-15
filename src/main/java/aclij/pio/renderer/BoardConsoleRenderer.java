@@ -1,9 +1,10 @@
 package aclij.pio.renderer;
 
-import aclij.pio.*;
 import aclij.pio.board.Board;
+import aclij.pio.coordinates.Color;
+import aclij.pio.coordinates.Coordinates;
+import aclij.pio.coordinates.File;
 import aclij.pio.pieces.Piece;
-import aclij.pio.renderer.Render;
 
 public class BoardConsoleRenderer implements Render {
 

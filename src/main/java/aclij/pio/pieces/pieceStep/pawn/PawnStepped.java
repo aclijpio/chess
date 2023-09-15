@@ -1,7 +1,6 @@
 package aclij.pio.pieces.pieceStep.pawn;
 
-import aclij.pio.Color;
-import aclij.pio.Coordinates;
+import aclij.pio.coordinates.Color;
 import aclij.pio.pieces.Piece;
 import aclij.pio.pieces.pieceStep.PieceStep;
 
@@ -39,6 +38,12 @@ public class PawnStepped implements PieceStep {
         return  (isEnemy && (dFile == 1 && dRank == -1)) ||
                 (!isEnemy && (dFile == 0 && dRank == -1));
     }
+
+    @Override
+    public boolean stepWithoutChange(Piece targetSquare) {
+        return step(targetSquare);
+    }
+
     @Override
     public int [][] getMovementRules() {
         return this.piece.color == Color.WHITE ? MOVEMENT_RULES_WHITE : MOVEMENT_RULES_BLACK;

@@ -1,4 +1,4 @@
-package aclij.pio;
+package aclij.pio.coordinates;
 
 import aclij.pio.exceptions.CoordinatesFormatException;
 

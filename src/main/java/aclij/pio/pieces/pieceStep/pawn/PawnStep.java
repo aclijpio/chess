@@ -1,6 +1,6 @@
 package aclij.pio.pieces.pieceStep.pawn;
 
-import aclij.pio.Color;
+import aclij.pio.coordinates.Color;
 import aclij.pio.pieces.Pawn;
 import aclij.pio.pieces.Piece;
 import aclij.pio.pieces.pieceStep.PieceStep;
@@ -30,17 +30,36 @@ public class PawnStep implements PieceStep {
         return false;
     }
     @Override
-    public boolean step(Piece targetPiece) {
-        this.pawn.setPawnStep(new PawnStepped(this.pawn));
+    public boolean step(Piece targetSquare) {
         int dFile = Math.abs(
-                (this.pawn.coordinates.file.ordinal() + 1) - (targetPiece.coordinates.file.ordinal() + 1)
+                (this.pawn.coordinates.file.ordinal() + 1) - (targetSquare.coordinates.file.ordinal() + 1)
         );
-        int dRank = this.pawn.coordinates.rank - targetPiece.coordinates.rank;
-        boolean isEnemy = this.pawn.isEnemy(targetPiece);
+        int dRank = this.pawn.coordinates.rank - targetSquare.coordinates.rank;
+        boolean isEnemy = this.pawn.isEnemy(targetSquare);
+        if(this.pawn.color == Color.BLACK)
+            if ((isEnemy && (dFile == 1 && dRank == 1)) ||
+                    (!isEnemy && (dFile == 0 && (dRank == 1 || dRank == 2)))){
+                pawn.setPawnStep(new PawnStepped(this.pawn));
+                return true;
+            }
+        if  ((isEnemy && (dFile == 1 && dRank == -1)) ||
+                (!isEnemy && (dFile == 0 && (dRank == -1 || dRank == -2)))){
+            pawn.setPawnStep(new PawnStepped(this.pawn));
+            return true;
+        }
+        return false;
+    }
+    @Override
+    public boolean stepWithoutChange(Piece targetSquare){
+        int dFile = Math.abs(
+                (this.pawn.coordinates.file.ordinal() + 1) - (targetSquare.coordinates.file.ordinal() + 1)
+        );
+        int dRank = this.pawn.coordinates.rank - targetSquare.coordinates.rank;
+        boolean isEnemy = this.pawn.isEnemy(targetSquare);
         if(this.pawn.color == Color.BLACK)
             return (isEnemy && (dFile == 1 && dRank == 1)) ||
                     (!isEnemy && (dFile == 0 && (dRank == 1 || dRank == 2)));
-        return  (isEnemy && (dFile == 1 && dRank == -1)) ||
+        return (isEnemy && (dFile == 1 && dRank == -1)) ||
                 (!isEnemy && (dFile == 0 && (dRank == -1 || dRank == -2)));
     }
 
