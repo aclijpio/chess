@@ -1,6 +1,6 @@
-package aclij.pio.pieces.pieceStep;
+package aclij.pio.board.pieces.pieceStep;
 
-import aclij.pio.pieces.Piece;
+import aclij.pio.board.pieces.Piece;
 
 public interface PieceStep {
     boolean isPieceStepped();

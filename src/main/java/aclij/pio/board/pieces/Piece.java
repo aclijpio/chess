@@ -1,8 +1,8 @@
-package aclij.pio.pieces;
+package aclij.pio.board.pieces;
 
-import aclij.pio.coordinates.Color;
-import aclij.pio.coordinates.Coordinates;
-import aclij.pio.coordinates.File;
+import aclij.pio.board.pieces.coordinates.Color;
+import aclij.pio.board.pieces.coordinates.Coordinates;
+import aclij.pio.board.pieces.coordinates.File;
 import aclij.pio.board.Board;
 
 import java.util.*;

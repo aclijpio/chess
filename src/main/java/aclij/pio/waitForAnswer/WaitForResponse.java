@@ -1,6 +1,6 @@
 package aclij.pio.waitForAnswer;
 
-import aclij.pio.coordinates.Coordinates;
+import aclij.pio.board.pieces.coordinates.Coordinates;
 
 public interface WaitForResponse {
     Coordinates getNextStep();

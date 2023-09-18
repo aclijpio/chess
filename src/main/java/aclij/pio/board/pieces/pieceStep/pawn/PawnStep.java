@@ -1,9 +1,9 @@
-package aclij.pio.pieces.pieceStep.pawn;
+package aclij.pio.board.pieces.pieceStep.pawn;
 
-import aclij.pio.coordinates.Color;
-import aclij.pio.pieces.Pawn;
-import aclij.pio.pieces.Piece;
-import aclij.pio.pieces.pieceStep.PieceStep;
+import aclij.pio.board.pieces.Pawn;
+import aclij.pio.board.pieces.coordinates.Color;
+import aclij.pio.board.pieces.Piece;
+import aclij.pio.board.pieces.pieceStep.PieceStep;
 
 public class PawnStep implements PieceStep {
 

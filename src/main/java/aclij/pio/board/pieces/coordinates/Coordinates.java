@@ -1,6 +1,6 @@
-package aclij.pio.coordinates;
+package aclij.pio.board.pieces.coordinates;
 
-import aclij.pio.exceptions.CoordinatesFormatException;
+import aclij.pio.board.pieces.coordinates.exceptions.CoordinatesFormatException;
 
 import java.util.Objects;
 

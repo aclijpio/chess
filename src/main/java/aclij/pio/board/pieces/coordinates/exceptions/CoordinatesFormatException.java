@@ -1,4 +1,4 @@
-package aclij.pio.exceptions;
+package aclij.pio.board.pieces.coordinates.exceptions;
 
 public class CoordinatesFormatException extends Exception{
     public String getValue(){

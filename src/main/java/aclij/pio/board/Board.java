@@ -1,10 +1,10 @@
 package aclij.pio.board;
-
-import aclij.pio.coordinates.Color;
-import aclij.pio.coordinates.Coordinates;
-import aclij.pio.coordinates.File;
-import aclij.pio.exceptions.PieceNotFoundException;
-import aclij.pio.pieces.*;
+import aclij.pio.board.fen.FenHandler;
+import aclij.pio.board.pieces.*;
+import aclij.pio.board.pieces.coordinates.Color;
+import aclij.pio.board.pieces.coordinates.Coordinates;
+import aclij.pio.board.pieces.coordinates.File;
+import aclij.pio.board.exceptions.PieceNotFoundException;
 
 import java.util.HashMap;
 
@@ -40,9 +40,12 @@ public class Board{
             return new Pawn(null, coordinates);
         }
     }
-    private void setPiece (Coordinates coordinates, Piece piece){
+    public void setPiece (Coordinates coordinates, Piece piece) {
         piece.coordinates = coordinates;
         pieces.put(coordinates, piece);
+    }
+    public String toFen(){
+        return FenHandler.encode(this);
     }
     public HashMap<Coordinates, Piece> getPieces(){
         return pieces;

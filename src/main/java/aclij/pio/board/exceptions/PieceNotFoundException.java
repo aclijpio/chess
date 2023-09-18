@@ -1,4 +1,4 @@
-package aclij.pio.exceptions;
+package aclij.pio.board.exceptions;
 
 public class PieceNotFoundException extends RuntimeException{
 

@@ -1,14 +1,13 @@
 package aclij.pio.game;
 
 import aclij.pio.board.Board;
-import aclij.pio.coordinates.Color;
-import aclij.pio.coordinates.Coordinates;
-import aclij.pio.coordinates.File;
-import aclij.pio.game.State;
-import aclij.pio.exceptions.PieceNotFoundException;
-import aclij.pio.pieces.Knight;
-import aclij.pio.pieces.Piece;
-import aclij.pio.pieces.Queen;
+import aclij.pio.board.BoardFactory;
+import aclij.pio.board.pieces.coordinates.Color;
+import aclij.pio.board.pieces.coordinates.Coordinates;
+import aclij.pio.board.pieces.coordinates.File;
+import aclij.pio.board.pieces.Knight;
+import aclij.pio.board.pieces.Piece;
+import aclij.pio.board.pieces.Queen;
 import aclij.pio.renderer.Render;
 import aclij.pio.waitForAnswer.WaitForResponse;
 
@@ -24,26 +23,24 @@ public class ChessGame {
         this.board = board;
         this.render = render;
     }
-    private void initBoard(){
+    public void initBoard(){
         render.render(board);
     }
     public void start(WaitForResponse response){
         boolean isWhiteToMove = true;
         state = State.ACTIVE;
-        initBoard();
         do{
-            try {
-                Piece selectedPiece = board.getPiece(response.getNextStep());
-                Piece targetPiece = board.tryGetPiece(response.getNextStep());
-                if (conditionForMove(selectedPiece, targetPiece, isWhiteToMove)) {
-                    board.pieceMoveTo(selectedPiece, targetPiece.coordinates);
-                    isWhiteToMove = !isWhiteToMove;
-                    render.render(board);
-                }
-            } catch (PieceNotFoundException e ){
-
+            Piece selectedPiece = board.getPiece(response.getNextStep());
+            Piece targetPiece = board.tryGetPiece(response.getNextStep());
+            if (conditionForMove(selectedPiece, targetPiece, isWhiteToMove)) {
+                board.pieceMoveTo(selectedPiece, targetPiece.coordinates);
+                isWhiteToMove = !isWhiteToMove;
+                render.render(board);
             }
         } while (state == State.ACTIVE);
+    }
+    public String getFen(){
+        return this.board.toFen();
     }
     private boolean pieceIsUnderAttack(Class<? extends Piece> pieceClass){
         for (Piece piece:

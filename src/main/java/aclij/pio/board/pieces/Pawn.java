@@ -1,12 +1,12 @@
-package aclij.pio.pieces;
+package aclij.pio.board.pieces;
 
-import aclij.pio.coordinates.Color;
-import aclij.pio.coordinates.Coordinates;
-import aclij.pio.coordinates.File;
+import aclij.pio.board.pieces.coordinates.Color;
+import aclij.pio.board.pieces.coordinates.Coordinates;
+import aclij.pio.board.pieces.coordinates.File;
 import aclij.pio.board.Board;
-import aclij.pio.pieces.pieceStep.pawn.PawnStep;
-import aclij.pio.pieces.pieceStep.PieceStep;
-import aclij.pio.pieces.pieceStep.pawn.PawnStepped;
+import aclij.pio.board.pieces.pieceStep.pawn.PawnStep;
+import aclij.pio.board.pieces.pieceStep.PieceStep;
+import aclij.pio.board.pieces.pieceStep.pawn.PawnStepped;
 
 import java.util.HashSet;
 import java.util.List;
