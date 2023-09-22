@@ -23,9 +23,6 @@ public abstract class Piece {
     public abstract Set<List<Coordinates>> getAllPossibleMoveCoordinatesUntilColor(Board board);
 
     public abstract boolean checkAvailableMove(Piece targetSquare);
-    public boolean isQueen(){
-        return false;
-    }
     public boolean isEnemy(Piece piece){
         return isEnemy(piece.color);
     }
@@ -49,13 +46,18 @@ public abstract class Piece {
                 .stream()
                 .anyMatch(Objects::nonNull);
     }
-    public boolean isAttacksPiece(Board board, Class<? extends Piece> pieceClass){
+    public boolean isAttacksPieceClass(Board board, Class<? extends Piece> pieceClass){
         return getPossibleAttackCoordinates(board)
                 .stream()
                 .map(board::getPiece)
                 .anyMatch(x -> x.getClass().equals(pieceClass));
     }
-
+    public boolean isAttacksPiece(Board board, Piece piece){
+        return getPossibleAttackCoordinates(board)
+                .stream()
+                .map(board::getPiece)
+                .anyMatch(x -> x.equals(piece));
+    }
     protected Set<List<Coordinates>> getAbstractSinglePossibleMoveCoordinates(int [][] MOVEMENT_RULES){
         Set<List<Coordinates>> moveCoordinatesLines = new HashSet<>();
         int file = this.coordinates.file.ordinal();

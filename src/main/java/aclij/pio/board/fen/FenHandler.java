@@ -35,7 +35,7 @@ public class FenHandler {
         return board;
     }
     public static String encode(Board board){
-        StringBuilder fenNotation = new StringBuilder(64); // Задаем начальную емкость 64 (8x8 шахматная доска)
+        StringBuilder fenNotation = new StringBuilder(64);
 
         for (int rank = 8; rank >= 1; rank--) {
             int emptySquareCount = 0;

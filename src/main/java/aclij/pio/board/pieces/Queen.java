@@ -22,10 +22,6 @@ public class Queen extends Piece{
         super(color, coordinates);
     }
 
-    @Override
-    public boolean isQueen() {
-        return true;
-    }
 
     @Override
     public Set<List<Coordinates>> getAllPossibleMoveCoordinates() {

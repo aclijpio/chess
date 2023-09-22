@@ -1,7 +1,6 @@
 package aclij.pio.game;
 
 import aclij.pio.board.Board;
-import aclij.pio.board.BoardFactory;
 import aclij.pio.board.pieces.coordinates.Color;
 import aclij.pio.board.pieces.coordinates.Coordinates;
 import aclij.pio.board.pieces.coordinates.File;
@@ -11,7 +10,9 @@ import aclij.pio.board.pieces.Queen;
 import aclij.pio.renderer.Render;
 import aclij.pio.waitForAnswer.WaitForResponse;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ChessGame {
 
@@ -42,42 +43,10 @@ public class ChessGame {
     public String getFen(){
         return this.board.toFen();
     }
-    private boolean pieceIsUnderAttack(Class<? extends Piece> pieceClass){
-        for (Piece piece:
-                board.getPieces().values()) {
-            if(piece.isAttacksPiece(board, pieceClass))
-                return true;
-        }
-        return false;
-    }
 
-    private boolean isCheckmate(Piece piece){
-        boolean isUnderAttack = pieceIsUnderAttack(Queen.class);
-        if (isUnderAttack && (queenCantMove(piece)))
-            state = State.COMPLETED;
-        return isUnderAttack;
-    }
-    private boolean moveAndCheckForCheck(Piece piece, Coordinates coordinates) {
-        if (piece.isQueen()) {
-            Coordinates oldCoordinates = piece.coordinates;
-            piece.coordinates = coordinates;
-            boolean isUnderAttack = pieceIsUnderAttack(Queen.class);
-            piece.coordinates = oldCoordinates;
-            return !isUnderAttack;
-        }
-        return false;
-    }
-    private boolean queenCantMove(Piece piece){
-        if (piece.isQueen())
-            return piece.getAllPossibleMoveCoordinatesUntilColor(board)
-                .stream()
-                .flatMap(List::stream)
-                .noneMatch(coordinates -> moveAndCheckForCheck(piece, coordinates));
-        return true;
-    }
     private boolean conditionForMove(Piece piece, Piece targetSquare, boolean isWhiteMove){
         return (isWhiteMove == (piece.color == Color.WHITE) &&
-                (!isCheckmate(piece) || moveAndCheckForCheck(piece, targetSquare.coordinates)) &&
+                //(!isShah(piece) || moveAndCheckForCheck(piece, targetSquare.coordinates)) &&
                 piece.checkAvailableMove(targetSquare) &&
                 (piece.isEnemy(targetSquare) || board.isSquareEmpty(targetSquare.coordinates)) &&
                 isPieceJump(piece, targetSquare.coordinates));
@@ -99,5 +68,8 @@ public class ChessGame {
     }
     public State getState() {
         return state;
+    }
+    public void setState(State state){
+        this.state = state;
     }
 }
