@@ -6,50 +6,51 @@ import aclij.pio.board.pieces.coordinates.Coordinates;
 import aclij.pio.board.pieces.coordinates.File;
 import aclij.pio.board.pieces.Knight;
 import aclij.pio.board.pieces.Piece;
-import aclij.pio.board.pieces.Queen;
 import aclij.pio.renderer.Render;
 import aclij.pio.waitForAnswer.WaitForResponse;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class ChessGame {
 
     private final Board board;
     private final Render render;
     private State state;
+    CheckMate checkMate;
 
     public ChessGame(Board board, Render render) {
         this.board = board;
+        this.checkMate = new CheckMate(board);
         this.render = render;
     }
-    public void initBoard(){
-        render.render(board);
-    }
-    public void start(WaitForResponse response){
-        boolean isWhiteToMove = true;
+    public void start(WaitForResponse response) {
+        boolean isWhiteToMove = board.currentPlayerColor == Color.WHITE;
         state = State.ACTIVE;
-        do{
-            Piece selectedPiece = board.getPiece(response.getNextStep());
-            Piece targetPiece = board.tryGetPiece(response.getNextStep());
-            if (conditionForMove(selectedPiece, targetPiece, isWhiteToMove)) {
+        render.render(board);
+        do {
+            Piece selectedPiece = board.getPiece(response.getMove());
+            Piece targetPiece = board.tryGetPiece(response.getMove());
+            boolean condition = conditionForMove(selectedPiece, targetPiece, isWhiteToMove);
+            if (condition) {
                 board.pieceMoveTo(selectedPiece, targetPiece.coordinates);
                 isWhiteToMove = !isWhiteToMove;
                 render.render(board);
             }
         } while (state == State.ACTIVE);
     }
+    public void move(ChessMove chessMove){
+
+    }
     public String getFen(){
         return this.board.toFen();
     }
 
     private boolean conditionForMove(Piece piece, Piece targetSquare, boolean isWhiteMove){
-        return (isWhiteMove == (piece.color == Color.WHITE) &&
-                //(!isShah(piece) || moveAndCheckForCheck(piece, targetSquare.coordinates)) &&
+        return (isWhiteMove == (piece.color == board.currentPlayerColor) &&
                 piece.checkAvailableMove(targetSquare) &&
-                (piece.isEnemy(targetSquare) || board.isSquareEmpty(targetSquare.coordinates)) &&
+                (canMove(piece, targetSquare)) &&
                 isPieceJump(piece, targetSquare.coordinates));
+    }
+    private boolean canMove(Piece piece, Piece targetSquare){
+        return piece.isEnemy(targetSquare) || board.isSquareEmpty(targetSquare.coordinates);
     }
     private boolean isPieceJump(Piece piece, Coordinates coordinates){
         if (piece instanceof Knight) return true;

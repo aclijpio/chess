@@ -6,14 +6,10 @@ import aclij.pio.board.pieces.pieceStep.PieceStep;
 
 public class PawnStepped implements PieceStep {
     public static final int [][] MOVEMENT_RULES_WHITE = {
-            {0, 1},
-            {1, 1},
-            {-1, 1}
+            {0, 1}
     };
     public static final int [][] MOVEMENT_RULES_BLACK= {
-            {0, -1},
-            {1, -1},
-            {-1, -1}
+            {0, -1}
     };
     private final Piece piece;
     public PawnStepped(Piece piece) {

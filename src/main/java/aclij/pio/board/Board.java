@@ -3,13 +3,16 @@ import aclij.pio.board.fen.FenHandler;
 import aclij.pio.board.pieces.*;
 import aclij.pio.board.pieces.coordinates.Color;
 import aclij.pio.board.pieces.coordinates.Coordinates;
-import aclij.pio.board.pieces.coordinates.File;
 import aclij.pio.board.exceptions.PieceNotFoundException;
 
 import java.util.HashMap;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Board{
     HashMap<Coordinates, Piece> pieces = new HashMap<Coordinates, Piece>();
+    public Color currentPlayerColor;
 
     public boolean isSquareEmpty(Coordinates coordinates){
         return !isSquareOccupied(coordinates);
@@ -18,10 +21,30 @@ public class Board{
         return this.pieces.containsKey(coordinates);
     }
 
-    public void pieceMoveTo(Piece selectedPiece, Coordinates coordinates){
+    public Piece pieceMoveTo(Piece selectedPiece, Coordinates coordinates){
         Piece piece = this.getPiece(selectedPiece.coordinates);
         pieces.remove(piece.coordinates);
-        this.setPiece(coordinates, piece.moveTo(coordinates));
+        this.setPiece(piece.moveTo(coordinates));
+        return piece;
+    }
+    public Optional<Piece> getKing(Color color){
+        for (Piece piece:
+                this.getPieces().values()) {
+            if (piece.color == color && piece instanceof King)
+                return Optional.of(piece);
+        }
+        return Optional.empty();
+    }
+    public Set<Piece> getPiece(Class<? extends Piece> pieceClass){
+        return this.pieces.values().stream()
+                .filter(piece -> piece.getClass().equals(pieceClass))
+                .collect(Collectors.toSet());
+    }
+    public Optional<Piece> getPiece(Class<? extends Piece> pieceClass, Color pieceColor){
+        return this.pieces.values().stream()
+                .filter(piece -> piece.color == pieceColor && piece.getClass().equals(pieceClass))
+                .findAny();
+
     }
     public Piece getPiece(Coordinates coordinates) throws PieceNotFoundException {
         if (isSquareEmpty(coordinates))
@@ -40,72 +63,14 @@ public class Board{
             return new Pawn(null, coordinates);
         }
     }
-    public void setPiece (Coordinates coordinates, Piece piece) {
-        piece.coordinates = coordinates;
-        pieces.put(coordinates, piece);
+    public void setPiece (Piece piece) {
+        pieces.put(piece.coordinates, piece);
     }
+
     public String toFen(){
         return FenHandler.encode(this);
     }
     public HashMap<Coordinates, Piece> getPieces(){
         return pieces;
-    }
-    public void setupDefaultPiecesPositions(){
-        // set pawns
-        for(File file : File.values()){
-            Coordinates coordinatesWhite = new Coordinates(file, 2);
-            Coordinates coordinatesBlack = new Coordinates(file, 7);
-            this.setPiece(coordinatesWhite, new Pawn(Color.WHITE, coordinatesWhite));
-            this.setPiece(coordinatesBlack, new Pawn(Color.BLACK, coordinatesBlack));
-        }
-        //set rooks
-        {
-            Coordinates coordinatesWhiteFirst =  new Coordinates(File.A, 1);
-            Coordinates coordinatesWhiteSecond =  new Coordinates(File.H, 1);
-            Coordinates coordinatesBlackFirst = new Coordinates(File.A, 8);
-            Coordinates coordinatesBlackSecond = new Coordinates(File.H, 8);
-            this.setPiece(coordinatesWhiteFirst, new Rook(Color.WHITE, coordinatesWhiteFirst));
-            this.setPiece(coordinatesWhiteSecond, new Rook(Color.WHITE, coordinatesWhiteSecond));
-            this.setPiece(coordinatesBlackFirst, new Rook(Color.BLACK, coordinatesBlackFirst));
-            this.setPiece(coordinatesBlackSecond, new Rook(Color.BLACK, coordinatesBlackSecond));
-        }
-        //set king
-        {
-            Coordinates coordinatesWhite = new Coordinates(File.D, 1);
-            Coordinates coordinatesBlack = new Coordinates(File.E, 8);
-            this.setPiece(coordinatesWhite, new King(Color.WHITE, coordinatesWhite));
-            this.setPiece(coordinatesBlack, new King(Color.BLACK, coordinatesBlack));
-        }
-        //set queen
-        {
-            Coordinates coordinatesWhite = new Coordinates(File.E, 1);
-            Coordinates coordinatesBlack = new Coordinates(File.D, 8);
-            Piece whiteQueen = new Queen(Color.WHITE, coordinatesWhite);
-            Piece blackQueen = new Queen(Color.BLACK, coordinatesWhite);
-            this.setPiece(coordinatesWhite, whiteQueen);
-            this.setPiece(coordinatesBlack, blackQueen);
-        }
-        //set bishop
-        {
-            Coordinates coordinatesWhiteFirst =  new Coordinates(File.C, 1);
-            Coordinates coordinatesWhiteSecond =  new Coordinates(File.F, 1);
-            Coordinates coordinatesBlackFirst = new Coordinates(File.C, 8);
-            Coordinates coordinatesBlackSecond = new Coordinates(File.F, 8);
-            this.setPiece(coordinatesWhiteFirst, new Bishop(Color.WHITE, coordinatesWhiteFirst));
-            this.setPiece(coordinatesWhiteSecond, new Bishop(Color.WHITE, coordinatesWhiteSecond));
-            this.setPiece(coordinatesBlackFirst, new Bishop(Color.BLACK, coordinatesBlackFirst));
-            this.setPiece(coordinatesBlackSecond, new Bishop(Color.BLACK, coordinatesBlackSecond));
-        }
-        //set knight
-        {
-            Coordinates coordinatesWhiteFirst =  new Coordinates(File.B, 1);
-            Coordinates coordinatesWhiteSecond =  new Coordinates(File.G, 1);
-            Coordinates coordinatesBlackFirst = new Coordinates(File.B, 8);
-            Coordinates coordinatesBlackSecond = new Coordinates(File.G, 8);
-            this.setPiece(coordinatesWhiteFirst, new Knight(Color.WHITE, coordinatesWhiteFirst));
-            this.setPiece(coordinatesWhiteSecond, new Knight(Color.WHITE, coordinatesWhiteSecond));
-            this.setPiece(coordinatesBlackFirst, new Knight(Color.BLACK, coordinatesBlackFirst));
-            this.setPiece(coordinatesBlackSecond, new Knight(Color.BLACK, coordinatesBlackSecond));
-        }
     }
 }

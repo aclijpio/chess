@@ -25,13 +25,18 @@ public class FenHandler {
                 else {
                     Coordinates coordinates = new Coordinates(File.values()[dFile], rank);
                     board.setPiece(
-                            coordinates,
                             decode(fenChar, coordinates)
                             );
                     dFile++;
                 }
             }
         }
+        for (int i = 0; i < cd.length; i++) {
+            System.out.print(i + "--------");
+            System.out.println(cd[i]);
+        }
+        board.currentPlayerColor = cd[1].equals("w") ? Color.WHITE : Color.BLACK;
+        System.out.println(board.currentPlayerColor);
         return board;
     }
     public static String encode(Board board){
@@ -56,6 +61,7 @@ public class FenHandler {
             if (rank > 1)
                 fenNotation.append("/");
         }
+        fenNotation.append(board.currentPlayerColor == Color.WHITE ? " w ": " b ");
         return fenNotation.toString();
     }
 
@@ -79,11 +85,11 @@ public class FenHandler {
                     new Bishop(Color.WHITE, coordinates) :
                     new Bishop(Color.BLACK, coordinates);
             //king
-            case 'Q' -> fenChar == 'Q' ?
+            case 'K' -> fenChar == 'K' ?
                     new King(Color.WHITE, coordinates) :
                     new King(Color.BLACK, coordinates);
             //queen
-            case 'K' -> fenChar == 'K' ?
+            case 'Q' -> fenChar == 'Q' ?
                     new Queen(Color.WHITE, coordinates) :
                     new Queen(Color.BLACK, coordinates);
 
@@ -102,9 +108,9 @@ public class FenHandler {
             //Bishop
             case "Bishop" -> piece.color == Color.WHITE ? 'B' : 'b';
             //King
-            case "King" -> piece.color == Color.WHITE ? 'Q' : 'q';
+            case "King" -> piece.color == Color.WHITE ? 'K' : 'k';
             //Queen
-            case "Queen" -> piece.color == Color.WHITE ? 'K' : 'k';
+            case "Queen" -> piece.color == Color.WHITE ? 'Q' : 'q';
 
             default -> throw new EncodingException("Unexpected value: " + piece.getClass().getSimpleName());
         };

@@ -1,15 +1,18 @@
 package aclij.pio.game;
 
 import aclij.pio.board.Board;
+import aclij.pio.board.BoardFactory;
+import aclij.pio.board.exceptions.PieceNotFoundException;
+import aclij.pio.board.pieces.Knight;
 import aclij.pio.board.pieces.Piece;
-import aclij.pio.board.pieces.Queen;
+import aclij.pio.board.pieces.King;
 import aclij.pio.board.pieces.coordinates.Color;
 import aclij.pio.board.pieces.coordinates.Coordinates;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CheckMate {
 
@@ -17,65 +20,82 @@ public class CheckMate {
     public CheckMate(Board board) {
         this.board = board;
     }
-    public boolean check(){
-        Set<Piece> piecesAttackingQueen = getPiecesClassUnderAttack(Queen.class);
 
-        // TODO: 22.09.2023  
-        return false;
-        
+    // Need modification
+
+    public State isCheckMate(){
+        Set<Piece> attackingPieces = getPiecesClassUnderAttack(King.class);
+        if (isCheck(attackingPieces)){
+            Color color = attackingPieces.iterator().next().color.negate();
+            Piece king = board.getKing(color).orElseThrow(
+                    () -> new PieceNotFoundException("King not found for color " + color)
+            );
+            if (isMate(king))
+                return State.MATE;
+            return State.CHECK;
+        }
+        return State.ACTIVE;
     }
+    private boolean isCheck(Set<Piece> attackingPieces){
+        return !attackingPieces.isEmpty();
+    }
+    private boolean isMate(Piece king){
+       for (Piece piece : board.getPieces().values())
+           if (piece.color == king.color && !piece.equals(king))
+               for (List<Coordinates> coordinatesList :
+                       piece.getAllPossibleMoveCoordinatesUntilColor(board))
+                   for (Coordinates coordinates: coordinatesList)
+                       if (!checkMovement(piece, coordinates, king))
+                           return false;
+       return true;
+    }
+    private boolean kingCantMove(Piece king){
+        return pieceCantMove(king);
+    }
+    private boolean pieceCantMove(Piece piece){
+        return piece.getAllPossibleMoveCoordinatesUntilColor(board).stream()
+                .flatMap(List::stream)
+                .anyMatch(coordinates -> !attackMovement(piece, coordinates));
+    }
+    //Handlers
     private Set<Piece> getPiecesClassUnderAttack(Class<? extends Piece> pieceClass){
         Set<Piece> piecesAttackingPieceClass = new HashSet<>();
         for (Piece piece:
                 board.getPieces().values()) {
-            if(piece.isAttacksPieceClass(board, pieceClass))
+            if(piece.isAttacksPieceClass(board, pieceClass)) {
                 piecesAttackingPieceClass.add(piece);
+            }
         }
         return piecesAttackingPieceClass;
     }
-    private boolean pieceIsUnderAttack(Piece targetPiece){
+    private boolean pieceClassIsUnderAttack(Class<? extends Piece> pieceClass){
         for (Piece piece:
-                board.getPieces().values()){
-            if (piece.isEnemy(targetPiece) && piece.isAttacksPiece(board, targetPiece))
+                board.getPieces().values()) {
+            if(piece.isAttacksPieceClass(board, pieceClass)) {
                 return true;
+            }
         }
         return false;
     }
-    private boolean isCheck(Set<Piece> piecesAttackingQueen){
-        return !piecesAttackingQueen.isEmpty();
-    }
-    private boolean isMate(Set<Piece> piecesAttackingQueen){
-        int attackingPiecesSize = piecesAttackingQueen.size();
-        Piece firstAttackingPiece = piecesAttackingQueen.iterator().next();
-        Color enemyColor = firstAttackingPiece.color;
-        boolean attackingPieceUnderAttack = attackingPiecesSize == 1 &&
-                pieceIsUnderAttack(firstAttackingPiece);
-        boolean onlyMove = attackingPiecesSize > 2;
+    private boolean pieceUnderAttack(Board board, Piece targetPiece){
+        return board.getPieces().values().stream()
+                .anyMatch(piece -> piece.isAttacksCoordinates(board, targetPiece.coordinates));
 
-        // TODO: 22.09.2023
-        return false;
-    }
-
-    private boolean canBlockOrCapture(){
-        return false;
-    }
-
-    private boolean isCheckMate(Piece piece){
-        if (piece instanceof Queen)
-                return piece.getAllPossibleMoveCoordinatesUntilColor(board)
-                        .stream()
-                        .flatMap(List::stream)
-                        .noneMatch(coordinates -> attackMovement(piece, coordinates));
-        return true;
     }
     private boolean attackMovement(Piece piece, Coordinates coordinates) {
         Coordinates oldCoordinates = piece.coordinates;
         piece.coordinates = coordinates;
-        boolean isUnderAttack = pieceIsUnderAttack(piece);
+        boolean isUnderAttack = pieceUnderAttack(board, piece);
         piece.coordinates = oldCoordinates;
         return !isUnderAttack;
     }
-    private boolean attackingPieceUnderAttack(Piece piece){
-        return pieceIsUnderAttack(piece);
+    private boolean checkMovement(Piece piece, Coordinates coordinates, Piece king){
+        Coordinates oldCoordinates = piece.coordinates;
+        piece.coordinates = coordinates;
+        boolean isUnderAttack = pieceUnderAttack(
+                BoardFactory.fromPieceCollection(board.getPieces().values()),
+                king);
+        piece.coordinates = oldCoordinates;
+        return isUnderAttack;
     }
 }

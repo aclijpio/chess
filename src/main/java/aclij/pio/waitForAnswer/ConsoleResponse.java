@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 public class ConsoleResponse implements WaitForResponse{
     Scanner scanner = new Scanner(System.in);
     @Override
-    public Coordinates getNextStep() {
+    public Coordinates getMove() {
         return simpleConsoleResponse();
     }
 

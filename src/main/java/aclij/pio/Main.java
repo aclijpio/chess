@@ -7,14 +7,12 @@ import aclij.pio.waitForAnswer.ConsoleResponse;
 
 public class Main {
     public static void main(String[] args) {
+        String startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        String testPos = "1nb1kbnr/pppppppp/8/4P1RP/5PQB/3P3N/r3PPPP/q3KBNR b";
         ChessGame chessGame = new ChessGame(BoardFactory.fromFen(
-                "r3kb1r/pp1pp1pp/3n1q2/1p2p3/nP2P3/3b2Q1/PPPP2PP/RNB1KBNR w KQkq - 0 1"),
+                testPos),
                 new BoardConsoleRenderer());
-        System.out.println(chessGame.getFen());
-        System.out.println(chessGame.getState());
-        chessGame.initBoard();
         chessGame.start(new ConsoleResponse());
-        System.out.println(chessGame.getState());
-        System.out.println(chessGame.getFen());
+
     }
 }
