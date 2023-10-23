@@ -11,9 +11,11 @@ import aclij.pio.board.pieces.pieceStep.pawn.PawnStepped;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Pawn extends Piece{
     PieceStep pawnStep =  new PawnStep(this);
+
     public Pawn(Color color, Coordinates coordinates) {
         super(color, coordinates);
     }
@@ -35,7 +37,11 @@ public class Pawn extends Piece{
 
     @Override
     public Set<Coordinates> getPossibleAttackCoordinates(Board board) {
-        return super.getPossibleAttackCoordinates(board);
+        return super.getAbstractSinglePossibleMoveCoordinates(board, pawnStep.getAttackRules())
+                .stream()
+                .flatMap(List::stream)
+                .filter(coordinates -> board.isSquareOccupied(coordinates) && board.getPiece(coordinates).isEnemy(this.color))
+                .collect(Collectors.toSet());
     }
 
     protected boolean isAvailableMove(Piece targetSquare){

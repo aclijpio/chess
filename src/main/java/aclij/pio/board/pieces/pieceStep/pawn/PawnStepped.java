@@ -4,7 +4,7 @@ import aclij.pio.board.pieces.coordinates.Color;
 import aclij.pio.board.pieces.Piece;
 import aclij.pio.board.pieces.pieceStep.PieceStep;
 
-public class PawnStepped implements PieceStep {
+public class PawnStepped extends PieceStep {
     public static final int [][] MOVEMENT_RULES_WHITE = {
             {0, 1}
     };
@@ -12,8 +12,10 @@ public class PawnStepped implements PieceStep {
             {0, -1}
     };
     private final Piece piece;
-    public PawnStepped(Piece piece) {
-        this.piece = piece;
+
+    public PawnStepped(Piece pawn) {
+        super(pawn);
+        this.piece = pawn;
     }
 
     @Override

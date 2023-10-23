@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class CheckMain {
     public static void main(String[] args) {
-        Board board = BoardFactory.fromFen("k7/8/5N2/8/8/8/r3K3/q3P3 w - - 0 1");
+        Board board = BoardFactory.fromFen("k7/8/8/8/8/R7/Q2pK3/R3P3 w - - 0 1");
         Render render = new BoardConsoleRenderer();
         render.render(board);
         System.out.println(board.toFen());

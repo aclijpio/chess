@@ -1,6 +1,7 @@
 package aclij.pio.game;
 
 import aclij.pio.board.Board;
+import aclij.pio.board.BoardFactory;
 import aclij.pio.board.pieces.coordinates.Color;
 import aclij.pio.board.pieces.coordinates.Coordinates;
 import aclij.pio.board.pieces.coordinates.File;
@@ -28,7 +29,7 @@ public class ChessGame {
         do {
             Piece selectedPiece = board.getPiece(response.getMove());
             Piece targetPiece = board.tryGetPiece(response.getMove());
-            boolean condition = conditionForMove(selectedPiece, targetPiece, isWhiteToMove);
+            boolean condition = conditionForMove(selectedPiece, targetPiece);
             if (condition) {
                 board.pieceMoveTo(selectedPiece, targetPiece.coordinates);
                 isWhiteToMove = !isWhiteToMove;
@@ -36,18 +37,34 @@ public class ChessGame {
             }
         } while (state == State.ACTIVE);
     }
-    public void move(ChessMove chessMove){
-
+    public boolean move(ChessMove chessMove){
+        Piece selectedPiece = board.getPiece(chessMove.source);
+        Piece targetPiece = board.tryGetPiece(chessMove.target);
+        boolean currentMove = conditionForMove(selectedPiece, targetPiece);
+        if (currentMove){
+            board.pieceMoveTo(selectedPiece, targetPiece.coordinates);
+            board.currentPlayerColor = board.currentPlayerColor.negate();
+            state = checkMate.isCheckMate();
+        }
+        return currentMove;
     }
     public String getFen(){
         return this.board.toFen();
     }
 
-    private boolean conditionForMove(Piece piece, Piece targetSquare, boolean isWhiteMove){
-        return (isWhiteMove == (piece.color == board.currentPlayerColor) &&
+    private boolean conditionForMove(Piece piece, Piece targetSquare){
+
+        boolean currentMove = (piece.color == board.currentPlayerColor) &&
                 piece.checkAvailableMove(targetSquare) &&
                 (canMove(piece, targetSquare)) &&
-                isPieceJump(piece, targetSquare.coordinates));
+                isPieceJump(piece, targetSquare.coordinates);
+        if (currentMove && state == State.CHECK){
+            piece.coordinates = targetSquare.coordinates;
+            return (new CheckMate(
+                    BoardFactory.fromPieceCollection(board.getPieces().values()))
+                    .isCheckMate().isActive());
+        }
+        return currentMove;
     }
     private boolean canMove(Piece piece, Piece targetSquare){
         return piece.isEnemy(targetSquare) || board.isSquareEmpty(targetSquare.coordinates);

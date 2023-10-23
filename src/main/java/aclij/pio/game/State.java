@@ -7,5 +7,8 @@ public enum State {
     COMPLETED,
     DRAW,
     CANCELLED,
-    PAUSED
+    PAUSED;
+    public boolean isActive(){
+        return this == ACTIVE;
+    }
 }
