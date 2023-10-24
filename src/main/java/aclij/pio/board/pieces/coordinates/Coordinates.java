@@ -19,7 +19,7 @@ public class Coordinates {
         return file + String.valueOf(rank);
     }
     public static Coordinates valueOf(String str){
-        String [] strings = str.split("");
+        String [] strings = str.toUpperCase().split("");
         return new Coordinates(File.valueOf(strings[0]), Integer.valueOf(strings[1]));
     }
     public static Coordinates valueOf(String file, String rank) throws CoordinatesFormatException {
