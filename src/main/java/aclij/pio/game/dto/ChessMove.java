@@ -1,4 +1,4 @@
-package aclij.pio.game;
+package aclij.pio.game.dto;
 
 import aclij.pio.board.pieces.coordinates.Coordinates;
 

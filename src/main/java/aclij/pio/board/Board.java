@@ -20,7 +20,9 @@ public class Board{
     public boolean isSquareOccupied(Coordinates coordinates){
         return this.pieces.containsKey(coordinates);
     }
-
+    public void currentColorPlayerNegate(){
+        this.currentPlayerColor = currentPlayerColor.negate();
+    }
     public Piece pieceMoveTo(Piece selectedPiece, Coordinates coordinates){
         Piece piece = this.getPiece(selectedPiece.coordinates);
         pieces.remove(piece.coordinates);

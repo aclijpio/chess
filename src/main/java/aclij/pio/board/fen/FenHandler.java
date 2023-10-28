@@ -31,12 +31,7 @@ public class FenHandler {
                 }
             }
         }
-        for (int i = 0; i < cd.length; i++) {
-            System.out.print(i + "--------");
-            System.out.println(cd[i]);
-        }
         board.currentPlayerColor = cd[1].equals("w") ? Color.WHITE : Color.BLACK;
-        System.out.println(board.currentPlayerColor);
         return board;
     }
     public static String encode(Board board){
