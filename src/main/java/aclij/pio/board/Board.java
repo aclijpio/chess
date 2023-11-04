@@ -4,6 +4,7 @@ import aclij.pio.board.pieces.*;
 import aclij.pio.board.pieces.coordinates.Color;
 import aclij.pio.board.pieces.coordinates.Coordinates;
 import aclij.pio.board.exceptions.PieceNotFoundException;
+import aclij.pio.game.State;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 public class Board{
     HashMap<Coordinates, Piece> pieces = new HashMap<Coordinates, Piece>();
     public Color currentPlayerColor;
+    public State state;
 
     public boolean isSquareEmpty(Coordinates coordinates){
         return !isSquareOccupied(coordinates);
@@ -23,11 +25,14 @@ public class Board{
     public void currentColorPlayerNegate(){
         this.currentPlayerColor = currentPlayerColor.negate();
     }
+
+    public void updateState(State state){
+        this.state = state;
+    }
     public Piece pieceMoveTo(Piece selectedPiece, Coordinates coordinates){
-        Piece piece = this.getPiece(selectedPiece.coordinates);
-        pieces.remove(piece.coordinates);
-        this.setPiece(piece.moveTo(coordinates));
-        return piece;
+        pieces.remove(selectedPiece.coordinates);
+        this.setPiece(selectedPiece.moveTo(coordinates));
+        return selectedPiece;
     }
     public Optional<Piece> getKing(Color color){
         for (Piece piece:
@@ -58,7 +63,7 @@ public class Board{
              );
         return pieces.get(coordinates);
     }
-    public Piece tryGetPiece(Coordinates coordinates){
+    public Piece wrapCoordinates(Coordinates coordinates){
         try {
             return getPiece(coordinates);
         } catch (PieceNotFoundException e){

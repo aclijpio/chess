@@ -4,9 +4,9 @@ public enum State {
     ACTIVE,
     CHECK,
     MATE,
-    COMPLETED,
     DRAW,
     CANCELLED,
+    PIECE_CHOOSING,
     PAUSED;
     public boolean isActive(){
         return this == ACTIVE;

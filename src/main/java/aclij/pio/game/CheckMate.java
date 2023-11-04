@@ -18,15 +18,24 @@ public record CheckMate(Board board) {
 
     public State isCheckMate() {
         Set<Piece> attackingPieces = getPiecesClassUnderAttack(King.class);
-        if (isCheck(attackingPieces)) {
+
+        boolean isCheck = isCheck(attackingPieces);
+        boolean isMate = false;
+
+        if (!attackingPieces.isEmpty()){
             Color color = attackingPieces.iterator().next().color.negate();
             Piece king = board.getKing(color).orElseThrow(
                     () -> new PieceNotFoundException("King not found for color " + color)
             );
-            if (isMate(king))
+            isMate = isMate(king);
+        }
+        if (isCheck) {
+            if (isMate)
                 return State.MATE;
             return State.CHECK;
         }
+        if (isMate)
+            return State.DRAW;
         return State.ACTIVE;
     }
 
@@ -36,7 +45,7 @@ public record CheckMate(Board board) {
 
     private boolean isMate(Piece king) {
         for (Piece piece : board.getPieces().values())
-            if (piece.color == king.color && !piece.equals(king))
+            if (piece.color == king.color)
                 for (List<Coordinates> coordinatesList :
                         piece.getAllPossibleMoveCoordinatesUntilColor(board))
                     for (Coordinates coordinates : coordinatesList)
@@ -46,13 +55,12 @@ public record CheckMate(Board board) {
     }
 
     private boolean kingCantMove(Piece king) {
-        return pieceCantMove(king);
+        return !pieceCanMove(king);
     }
-
-    private boolean pieceCantMove(Piece piece) {
+    private boolean pieceCanMove(Piece piece) {
         return piece.getAllPossibleMoveCoordinatesUntilColor(board).stream()
                 .flatMap(List::stream)
-                .anyMatch(coordinates -> !attackMovement(piece, coordinates));
+                .anyMatch(coordinates -> attackMovement(piece, coordinates));
     }
 
     //Handlers

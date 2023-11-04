@@ -4,6 +4,7 @@ import aclij.pio.board.Board;
 import aclij.pio.board.BoardFactory;
 import aclij.pio.board.pieces.Piece;
 import aclij.pio.board.pieces.coordinates.Color;
+import aclij.pio.game.CheckMate;
 import aclij.pio.game.ChessGame;
 import aclij.pio.game.State;
 import aclij.pio.game.dto.ChessMove;
@@ -14,17 +15,17 @@ import aclij.pio.waitForAnswer.WaitForResponse;
 public class ConsoleCustomGame {
     Render render = new BoardConsoleRenderer();
     ChessGame chessGame = new ChessGame(
-            BoardFactory.fromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+            BoardFactory.fromFen("1b1rkr2/pppp1ppp/8/8/8/8/PPPPQPPP/RNB1KBNR b KQ - 0 1")
     );
 
     public void start(WaitForResponse response) {
-        chessGame.setState(State.ACTIVE);
+        chessGame.getBoard().state = (new CheckMate(chessGame.getBoard()).isCheckMate());
         do {
             Board board = chessGame.getBoard();
             render.render(board);
-            ChessMove chessMove = new ChessMove(response.getMove(), response.getMove());
+            ChessMove chessMove = new ChessMove(response.getMove(), response.getMove(), board);
                 chessGame.move(chessMove);
-        } while (chessGame.getState() == State.ACTIVE);
+        } while (chessGame.getBoard().state != State.MATE);
     }
 
 }

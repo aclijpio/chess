@@ -1,4 +1,4 @@
-package aclij.pio.game;
+package aclij.pio.game.moveValidator;
 
 import aclij.pio.board.Board;
 import aclij.pio.board.BoardFactory;
@@ -6,46 +6,31 @@ import aclij.pio.board.pieces.Knight;
 import aclij.pio.board.pieces.Piece;
 import aclij.pio.board.pieces.coordinates.Coordinates;
 import aclij.pio.board.pieces.coordinates.File;
+import aclij.pio.game.CheckMate;
+import aclij.pio.game.State;
 import aclij.pio.game.dto.ChessMove;
 
 public class MoveValidator {
-    public final Board board;
-    private State state;
-    private CheckMate checkMate;
+
+    private final Board board;
 
     public MoveValidator(Board board) {
         this.board = board;
-        this.checkMate = new CheckMate(board);
     }
+
 
     public boolean isValidMove(ChessMove chessMove){
-        Piece selectedPiece = board.getPiece(chessMove.source);
-        Piece targetPiece = board.tryGetPiece(chessMove.target);
-        checkMate = new CheckMate(board);
-        if (conditionForMove(selectedPiece, targetPiece)){
-            board.pieceMoveTo(selectedPiece, targetPiece.coordinates);
-            board.currentColorPlayerNegate();
-            setState(checkMate.isCheckMate());
-            return true;
-        }
-        return false;
+        return conditionForMove(chessMove);
     }
-    public Board getBoard(){
-        return this.board;
-    }
-
-    public String getFen(){
-        return this.board.toFen();
-    }
-
-    private boolean conditionForMove(Piece piece, Piece targetSquare){
-
-        boolean currentMove = (piece.color == board.currentPlayerColor) &&
-                piece.checkAvailableMove(targetSquare) &&
-                (canMove(piece, targetSquare)) &&
-                isPieceJump(piece, targetSquare.coordinates);
-        if (currentMove && state == State.CHECK){
-            piece.coordinates = targetSquare.coordinates;
+    protected boolean conditionForMove(ChessMove chessMove){
+        Piece source = chessMove.source;
+        Piece target = board.wrapCoordinates(chessMove.target);
+        boolean currentMove = (source.color == board.currentPlayerColor) &&
+                source.checkAvailableMove(target) &&
+                (canMove(source, target)) &&
+                isPieceJump(source, target.coordinates);
+        if (currentMove && board.state == State.CHECK){
+            source.coordinates = target.coordinates;
             return (new CheckMate(
                     BoardFactory.fromPieceCollection(board.getPieces().values()))
                     .isCheckMate().isActive());
@@ -70,10 +55,5 @@ public class MoveValidator {
         }
         return true;
     }
-    public State getState() {
-        return state;
-    }
-    private void setState(State state){
-        this.state = state;
-    }
+
 }

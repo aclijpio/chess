@@ -130,5 +130,4 @@ public abstract class Piece {
         }
             return moveCoordinatesLines;
         }
-
 }

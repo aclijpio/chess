@@ -24,10 +24,16 @@ public class Pawn extends Piece{
     }
     @Override
     public Set<List<Coordinates>> getAllPossibleMoveCoordinates() {
+        super.getAbstractSinglePossibleMoveCoordinates( pawnStep.getMovementRules()).stream()
+                .flatMap(List::stream)
+                .forEach(System.out::println);
         return super.getAbstractSinglePossibleMoveCoordinates(pawnStep.getMovementRules());
     }
     @Override
     public Set<List<Coordinates>> getAllPossibleMoveCoordinatesUntilColor(Board board){
+        super.getAbstractSinglePossibleMoveCoordinates(board, pawnStep.getMovementRules()).stream()
+                .flatMap(List::stream)
+                .forEach(System.out::println);
         return super.getAbstractSinglePossibleMoveCoordinates(board, pawnStep.getMovementRules());
     }
     @Override
@@ -61,7 +67,7 @@ public class Pawn extends Piece{
                 Coordinates selectedCoordinates = new Coordinates(File.values()[dFile], dRank);
                 if (board.isSquareOccupied(selectedCoordinates) && board.getPiece(selectedCoordinates).color == this.color)
                     break;
-                else if (isAvailableMove(board.tryGetPiece(selectedCoordinates)))
+                else if (isAvailableMove(board.wrapCoordinates(selectedCoordinates)))
                     moveCoordinatesLines.add(List.of(selectedCoordinates)
                     );
             }
