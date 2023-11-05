@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class Board{
     HashMap<Coordinates, Piece> pieces = new HashMap<Coordinates, Piece>();
     public Color currentPlayerColor;
-    public State state;
+    State state;
 
     public boolean isSquareEmpty(Coordinates coordinates){
         return !isSquareOccupied(coordinates);
@@ -26,13 +26,9 @@ public class Board{
         this.currentPlayerColor = currentPlayerColor.negate();
     }
 
-    public void updateState(State state){
-        this.state = state;
-    }
-    public Piece pieceMoveTo(Piece selectedPiece, Coordinates coordinates){
+    public void pieceMoveTo(Piece selectedPiece, Coordinates coordinates){
         pieces.remove(selectedPiece.coordinates);
         this.setPiece(selectedPiece.moveTo(coordinates));
-        return selectedPiece;
     }
     public Optional<Piece> getKing(Color color){
         for (Piece piece:
@@ -79,5 +75,16 @@ public class Board{
     }
     public HashMap<Coordinates, Piece> getPieces(){
         return pieces;
+    }
+
+    @Override
+    public Board clone() {
+        try {
+            Board clone = (Board) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

@@ -15,17 +15,18 @@ import aclij.pio.waitForAnswer.WaitForResponse;
 public class ConsoleCustomGame {
     Render render = new BoardConsoleRenderer();
     ChessGame chessGame = new ChessGame(
-            BoardFactory.fromFen("1b1rkr2/pppp1ppp/8/8/8/8/PPPPQPPP/RNB1KBNR b KQ - 0 1")
+            BoardFactory.fromFen("rnbqkbnr/pppp1ppp/8/8/8/8/PPPPQPPP/RNB1KBNR b KQkq - 0 1")
     );
 
     public void start(WaitForResponse response) {
-        chessGame.getBoard().state = (new CheckMate(chessGame.getBoard()).isCheckMate());
+
         do {
             Board board = chessGame.getBoard();
             render.render(board);
             ChessMove chessMove = new ChessMove(response.getMove(), response.getMove(), board);
-                chessGame.move(chessMove);
-        } while (chessGame.getBoard().state != State.MATE);
+            chessGame.move(chessMove);
+
+        } while (!(new CheckMate(chessGame.getBoard()).isCheckMate().getState() == State.MATE));
     }
 
 }

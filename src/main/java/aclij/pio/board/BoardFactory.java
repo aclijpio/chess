@@ -3,6 +3,7 @@ package aclij.pio.board;
 import aclij.pio.board.fen.FenHandler;
 import aclij.pio.board.pieces.Piece;
 import aclij.pio.game.PieceCondition;
+import aclij.pio.game.dto.ChessMove;
 
 import java.util.Collection;
 import java.util.Set;
@@ -25,5 +26,10 @@ public final class BoardFactory {
                         .filter(pieceCondition::cond)
                         .collect(Collectors.toSet())
         );
+    }
+    public static Board fromPieceCollectionWithMove(Collection<Piece> pieces, ChessMove chessMove){
+        Board board = fromPieceCollection(pieces);
+        board.pieceMoveTo(chessMove.getSource(board), chessMove.getTarget());
+        return board;
     }
 }

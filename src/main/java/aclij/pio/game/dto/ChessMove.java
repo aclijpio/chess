@@ -8,17 +8,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ChessMove {
-    public final Piece source;
-    public final Coordinates target;
+    private final Coordinates source;
+    private final Coordinates target;
     private final static Pattern pattern = Pattern.compile("^([A-H][1-8])$");
 
     public ChessMove(String source, String target, Board board) {
-        this.source = toPiece(toCoordinates(source), board);
+        this.source = toCoordinates(source);
         this.target = toCoordinates(target);
     }
 
-    public ChessMove(Coordinates source, Coordinates target, Board board) {
-        this.source = toPiece(source, board);
+    public  ChessMove(Coordinates source, Coordinates target, Board board) {
+        this.source = source;
         this.target = target;
     }
 
@@ -29,7 +29,15 @@ public class ChessMove {
         }
         return null;
     }
-    private Piece toPiece(Coordinates coordinates, Board board){
-        return board.getPiece(coordinates);
+
+    public Coordinates getSource() {
+        return source;
+    }
+    public Piece getSource(Board board){
+        return board.getPiece(source);
+    }
+
+    public Coordinates getTarget() {
+        return target;
     }
 }

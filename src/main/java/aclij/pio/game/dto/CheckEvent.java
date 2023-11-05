@@ -6,7 +6,6 @@ import aclij.pio.game.CheckMate;
 import aclij.pio.game.State;
 import aclij.pio.renderer.Render;
 
-import java.util.Arrays;
 import java.util.Map;
 
 public class CheckEvent {
@@ -35,8 +34,6 @@ public class CheckEvent {
         Board board = BoardFactory.fromFen(fenCode);
         render.render(board);
         CheckMate checkMate = new CheckMate(board);
-        return checkMate.isCheckMate();
+        return checkMate.isCheckMate().getState();
     }
-
-
 }

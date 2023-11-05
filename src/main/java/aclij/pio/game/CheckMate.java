@@ -7,36 +7,41 @@ import aclij.pio.board.pieces.Piece;
 import aclij.pio.board.pieces.King;
 import aclij.pio.board.pieces.coordinates.Color;
 import aclij.pio.board.pieces.coordinates.Coordinates;
+import aclij.pio.game.dto.CheckMateResult;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
-public record CheckMate(Board board) {
+public class CheckMate {
+    private final Board board;
+    State state;
+    public CheckMate(Board board) {
+        this.board = board;
+    }
 
-    // Need modification
-
-    public State isCheckMate() {
+    public CheckMateResult isCheckMate() {
         Set<Piece> attackingPieces = getPiecesClassUnderAttack(King.class);
-
         boolean isCheck = isCheck(attackingPieces);
         boolean isMate = false;
-
+        Optional<Piece> king = Optional.empty();
         if (!attackingPieces.isEmpty()){
             Color color = attackingPieces.iterator().next().color.negate();
-            Piece king = board.getKing(color).orElseThrow(
+            Piece curKing = board.getKing(color).orElseThrow(
                     () -> new PieceNotFoundException("King not found for color " + color)
             );
-            isMate = isMate(king);
+            king = Optional.of(curKing);
+            isMate = isMate(curKing);
         }
         if (isCheck) {
             if (isMate)
-                return State.MATE;
-            return State.CHECK;
+                return new CheckMateResult(State.MATE, king);
+            return new CheckMateResult(State.CHECK, king);
         }
         if (isMate)
-            return State.DRAW;
-        return State.ACTIVE;
+            return new CheckMateResult(State.DRAW);
+        return new CheckMateResult(State.ACTIVE);
     }
 
     private boolean isCheck(Set<Piece> attackingPieces) {
