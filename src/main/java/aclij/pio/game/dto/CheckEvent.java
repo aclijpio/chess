@@ -2,11 +2,15 @@ package aclij.pio.game.dto;
 
 import aclij.pio.board.Board;
 import aclij.pio.board.BoardFactory;
+import aclij.pio.board.pieces.Pawn;
 import aclij.pio.game.CheckMate;
 import aclij.pio.game.State;
 import aclij.pio.renderer.Render;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CheckEvent {
 
@@ -34,6 +38,12 @@ public class CheckEvent {
         Board board = BoardFactory.fromFen(fenCode);
         render.render(board);
         CheckMate checkMate = new CheckMate(board);
+        board.getPieces().values().stream()
+                .filter(piece -> piece instanceof Pawn)
+                .map(piece -> piece.getAllPossibleMoveCoordinatesUntilColor(board))
+                .flatMap(Set::stream)
+                .flatMap(List::stream)
+                .forEach(System.out::println);
         return checkMate.isCheckMate().getState();
     }
 }

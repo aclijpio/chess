@@ -31,10 +31,29 @@ public class Pawn extends Piece{
     }
     @Override
     public Set<List<Coordinates>> getAllPossibleMoveCoordinatesUntilColor(Board board){
-        super.getAbstractSinglePossibleMoveCoordinates(board, pawnStep.getMovementRules()).stream()
-                .flatMap(List::stream)
-                .forEach(System.out::println);
-        return super.getAbstractSinglePossibleMoveCoordinates(board, pawnStep.getMovementRules());
+        Set<List<Coordinates>> moveCoordinatesLines = new HashSet<>();
+        int file = this.coordinates.file.ordinal();
+        int rank = this.coordinates.rank;
+        for (int [] movementRule :
+                pawnStep.getMovementRules()) {
+            int dFile = file + movementRule[0];
+            int dRank = rank + movementRule[1];
+            if (isNotAboard(dFile, dRank)) {
+                Coordinates selectedCoordinates = new Coordinates(File.values()[dFile], dRank);
+                if (movementRule[1] == 2 && board.isSquareOccupied(new Coordinates(selectedCoordinates.file, dRank - 1))){
+                    continue;
+                } else if (movementRule[1] == -2 && board.isSquareOccupied(new Coordinates(selectedCoordinates.file, dRank + 1))){
+                    continue;
+                }
+                if (board.isSquareOccupied(selectedCoordinates)){
+                    if(board.getPiece(selectedCoordinates).color != this.color)
+                        moveCoordinatesLines.add(List.of(selectedCoordinates));
+                    continue;
+                }
+                moveCoordinatesLines.add(List.of(selectedCoordinates));
+            }
+        }
+        return moveCoordinatesLines;
     }
     @Override
     public boolean checkAvailableMove(Piece targetSquare) {
