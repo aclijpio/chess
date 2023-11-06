@@ -15,7 +15,7 @@ import aclij.pio.waitForAnswer.WaitForResponse;
 public class ConsoleCustomGame {
     Render render = new BoardConsoleRenderer();
     ChessGame chessGame = new ChessGame(
-            BoardFactory.fromFen("rnbqkbnr/pppp1ppp/8/8/8/8/PPPPQPPP/RNB1KBNR b KQkq - 0 1")
+            BoardFactory.fromFen("rnbqkbnr/ppp5/8/3ppppp/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1")
     );
 
     public void start(WaitForResponse response) {

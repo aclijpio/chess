@@ -35,12 +35,17 @@ public class PawnStep extends PieceStep {
         );
         int dRank = this.pawn.coordinates.rank - targetSquare.coordinates.rank;
         boolean isEnemy = this.pawn.isEnemy(targetSquare);
-        if(this.pawn.color == Color.BLACK)
+        System.out.println(isEnemy);
+        System.out.println(dFile);
+        System.out.println(dRank);
+        if(this.pawn.color == Color.BLACK) {
             if ((isEnemy && (dFile == 1 && dRank == 1)) ||
-                    (!isEnemy && (dFile == 0 && (dRank == 1 || dRank == 2)))){
+                    (!isEnemy && (dFile == 0 && (dRank == 1 || dRank == 2)))) {
                 pawn.setPawnStep(new PawnStepped(this.pawn));
                 return true;
             }
+            return false;
+        }
         if  ((isEnemy && (dFile == 1 && dRank == -1)) ||
                 (!isEnemy && (dFile == 0 && (dRank == -1 || dRank == -2)))){
             pawn.setPawnStep(new PawnStepped(this.pawn));
