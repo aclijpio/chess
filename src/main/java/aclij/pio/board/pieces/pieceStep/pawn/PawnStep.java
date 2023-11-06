@@ -35,9 +35,6 @@ public class PawnStep extends PieceStep {
         );
         int dRank = this.pawn.coordinates.rank - targetSquare.coordinates.rank;
         boolean isEnemy = this.pawn.isEnemy(targetSquare);
-        System.out.println(isEnemy);
-        System.out.println(dFile);
-        System.out.println(dRank);
         if(this.pawn.color == Color.BLACK) {
             if ((isEnemy && (dFile == 1 && dRank == 1)) ||
                     (!isEnemy && (dFile == 0 && (dRank == 1 || dRank == 2)))) {
